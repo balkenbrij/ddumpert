@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
 import base64
 import ast
 import sys
