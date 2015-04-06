@@ -20,11 +20,8 @@ def geturl(url):
 def getmovieurl(html):
     match = re.search(DUMPERT_RE, html)
     if match:
-        try:
-            formats = ast.literal_eval(
-                base64.b64decode(match.group(1)).decode(ENCODING))
-        except:
-            return None
+        formats = ast.literal_eval(
+            base64.b64decode(match.group(1)).decode(ENCODING))
         try:    return formats['720p'].replace('\\', '')
         except: return formats['flv'].replace('\\', '')
     else:
