@@ -8,19 +8,21 @@ import re
 
 DUMPERT_RE = re.compile('data-files="(.+?)"')
 USERAGENT = {'User-Agent': 'Mozilla/5.0'}
+ENCODING = 'utf-8'
 
 class MyUrlOpener(urllib.request.FancyURLopener):
     version = USERAGENT['User-Agent']
     
 def geturl(url):
     request = urllib.request.Request(url, None, USERAGENT)
-    return urllib.request.urlopen(request).read()
+    return urllib.request.urlopen(request).read().decode(ENCODING)
 
 def getmovieurl(html):
     match = re.search(DUMPERT_RE, html)
     if match:
         try:
-            formats = ast.literal_eval(base64.b64decode(match.group(1)))
+            formats = ast.literal_eval(
+                base64.b64decode(match.group(1)).decode(ENCODING))
         except:
             return None
         try:    return formats['720p'].replace('\\', '')
