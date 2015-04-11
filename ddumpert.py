@@ -6,22 +6,21 @@ import sys
 import os
 import re
 
-DUMPERT_RE = re.compile('data-files="(.+?)"')
+DUMPERT_RE = re.compile(b'data-files="(.+?)"')
 USERAGENT = {'User-Agent': 'Mozilla/5.0'}
-ENCODING = 'utf-8'
 
 class MyUrlOpener(urllib.request.FancyURLopener):
     version = USERAGENT['User-Agent']
     
 def geturl(url):
     request = urllib.request.Request(url, None, USERAGENT)
-    return urllib.request.urlopen(request).read().decode(ENCODING)
+    return urllib.request.urlopen(request).read()
 
 def getmovieurl(html):
     match = re.search(DUMPERT_RE, html)
     if match:
         formats = ast.literal_eval(
-            base64.b64decode(match.group(1)).decode(ENCODING))
+            base64.b64decode(match.group(1)).decode("utf-8"))
         try:    return formats['720p'].replace('\\', '')
         except: return formats['flv'].replace('\\', '')
     else:
