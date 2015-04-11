@@ -1,26 +1,27 @@
 #! /usr/bin/python3
-import urllib.request
+import urllib.request, urllib.parse, urllib.error
 import base64
 import ast
 import sys
 import os
 import re
 
-DUMPERT_RE = re.compile(b'data-files="(.+?)"')
+DUMPERT_RE = re.compile('data-files="(.+?)"')
 USERAGENT = {'User-Agent': 'Mozilla/5.0'}
+ENCODING = 'utf-8'
 
 class MyUrlOpener(urllib.request.FancyURLopener):
     version = USERAGENT['User-Agent']
     
 def geturl(url):
     request = urllib.request.Request(url, None, USERAGENT)
-    return urllib.request.urlopen(request).read()
+    return urllib.request.urlopen(request).read().decode(ENCODING)
 
 def getmovieurl(html):
     match = re.search(DUMPERT_RE, html)
     if match:
         formats = ast.literal_eval(
-            base64.b64decode(match.group(1)).decode('utf-8'))
+            base64.b64decode(match.group(1)).decode(ENCODING))
         try:    return formats['720p'].replace('\\', '')
         except: return formats['flv'].replace('\\', '')
     else:
@@ -39,7 +40,7 @@ if len(sys.argv) != 2:
 movieurl = getmovieurl(geturl(sys.argv[1]))
 if movieurl:
     filename = os.path.basename(movieurl)
-    print(("Downloading '" + movieurl + "'.."))
+    print("Downloading '{0}'..".format(movieurl))
     urllib.request._urlopener = MyUrlOpener()
     if sys.stdout.isatty():
         urllib.request.urlretrieve(movieurl, filename,
